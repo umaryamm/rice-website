@@ -15,6 +15,9 @@ type Application = {
 const initialApplications: Application[] = [
   { id: "app-1", company: "AgriTrade Global Partners", applicant: "Sarah Jenkins, Director of Procurement", region: "North America, West Coast", volume: "5,000 MT / Annually", businessType: "Enterprise Wholesale", revenue: "$12.5M USD" },
   { id: "app-2", company: "Meridian Import Co.", applicant: "David Chen, VP Operations", region: "APAC, Southeast Asia", volume: "2,200 MT / Annually", businessType: "Regional Distributor", revenue: "$4.8M USD" },
+  { id: "app-3", company: "Nordic Grain Alliance", applicant: "Erik Lindqvist, Head of Sourcing", region: "EU, Scandinavia", volume: "3,400 MT / Annually", businessType: "Regional Distributor", revenue: "$6.1M USD" },
+  { id: "app-4", company: "Gulf Harvest Trading LLC", applicant: "Fatima Al-Rashid, Procurement Lead", region: "Middle East, GCC", volume: "7,800 MT / Annually", businessType: "Enterprise Wholesale", revenue: "$18.2M USD" },
+  { id: "app-5", company: "Andes Foodstuffs S.A.", applicant: "Mateo Rojas, Regional Buyer", region: "LATAM, South Cone", volume: "1,900 MT / Annually", businessType: "Regional Distributor", revenue: "$3.4M USD" },
 ];
 
 export default function ApplicationsReviewPage() {
@@ -27,76 +30,82 @@ export default function ApplicationsReviewPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
+  const handleReject = (id: string, company: string) => {
+    if (window.confirm(`Reject ${company}'s application? This can't be undone.`)) {
+      resolve(id, `${company} application rejected.`);
+    }
+  };
+
   return (
-    <div className="flex bg-[#FDFBF7] min-h-screen">
+    <div className="flex bg-background min-h-screen">
       <AdminSidebar />
-      <main className="flex-1 md:ml-64 min-h-screen">
+      <main className="flex-1 md:ml-64 min-h-screen pt-16 md:pt-0">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
-          <div className="flex justify-between items-end border-b border-[#E6DEC9]/40 pb-6 mb-12">
+          <div className="flex justify-between items-end border-b border-surface-container-highest/40 pb-6 mb-12">
             <div>
-              <h1 className="font-serif text-3xl md:text-4xl text-[#1A3322] mb-2">Pending Applications</h1>
-              <p className="text-sm text-[#1A3322]/70 max-w-2xl">Review and verify distributor applications. Select the appropriate tier to proceed with onboarding, or reject applications that do not meet corporate standards.</p>
+              <h1 className="font-serif text-3xl md:text-4xl text-primary-container mb-2">Pending Applications</h1>
+              <p className="text-sm text-primary-container/70 max-w-2xl">Review and verify distributor applications. Select the appropriate tier to proceed with onboarding, or reject applications that do not meet corporate standards.</p>
             </div>
-            <span className="hidden lg:block text-sm text-[#1A3322]/60">Showing {applications.length} of {applications.length} Pending</span>
+            <span className="hidden lg:block text-sm text-primary-container/60">Showing {applications.length} of {applications.length} Pending</span>
           </div>
 
           {applications.length === 0 ? (
-            <p className="text-center text-[#1A3322]/50 py-24">No pending applications — you're all caught up.</p>
+            <p className="text-center text-primary-container/50 py-24">No pending applications — you&apos;re all caught up.</p>
           ) : (
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
               {applications.map((app) => (
-                <article key={app.id} className="bg-white border border-[#E6DEC9]/40 rounded-lg p-6 flex flex-col gap-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <article key={app.id} className="bg-surface-container-lowest border border-surface-container-highest/40 rounded-xl p-6 flex flex-col gap-6 shadow-sm hover:shadow-luxury transition-shadow duration-300">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-full bg-[#E6DEC9]/30 flex items-center justify-center border border-[#E6DEC9]/40">
-                        <span className="material-symbols-outlined text-[#1A3322]/50 text-2xl">business_center</span>
+                      <div className="w-16 h-16 rounded-full bg-surface-container-highest/30 flex items-center justify-center border border-surface-container-highest/40">
+                        <span className="material-symbols-outlined text-primary-container/50 text-2xl">business_center</span>
                       </div>
                       <div>
-                        <h3 className="font-serif text-lg text-[#1A3322] font-bold">{app.company}</h3>
-                        <p className="text-sm text-[#1A3322]/60">Applicant: {app.applicant}</p>
+                        <h3 className="font-serif text-lg text-primary-container font-bold">{app.company}</h3>
+                        <p className="text-sm text-primary-container/60">Applicant: {app.applicant}</p>
                       </div>
                     </div>
-                    <span className="bg-[#E6DEC9]/40 text-[#1A3322] text-xs px-3 py-1 rounded-full flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-[#D4AF37]" /> New
+                    <span className="bg-surface-container-highest/40 text-primary-container text-xs px-3 py-1 rounded-full flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-accent-gold" /> New
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-y-4 gap-x-8 border-t border-b border-[#E6DEC9]/40 py-4 text-sm">
+                  <div className="grid grid-cols-2 gap-y-4 gap-x-8 border-t border-b border-surface-container-highest/40 py-4 text-sm">
                     <div>
-                      <span className="text-xs uppercase tracking-widest text-[#1A3322] block mb-1">Region</span>
-                      <span className="text-[#1A3322]/70">{app.region}</span>
+                      <span className="text-xs uppercase tracking-widest text-primary-container block mb-1">Region</span>
+                      <span className="text-primary-container/70">{app.region}</span>
                     </div>
                     <div>
-                      <span className="text-xs uppercase tracking-widest text-[#1A3322] block mb-1">Requested Volume</span>
-                      <span className="text-[#1A3322]/70">{app.volume}</span>
+                      <span className="text-xs uppercase tracking-widest text-primary-container block mb-1">Requested Volume</span>
+                      <span className="text-primary-container/70">{app.volume}</span>
                     </div>
                     <div>
-                      <span className="text-xs uppercase tracking-widest text-[#1A3322] block mb-1">Business Type</span>
-                      <span className="text-[#1A3322]/70">{app.businessType}</span>
+                      <span className="text-xs uppercase tracking-widest text-primary-container block mb-1">Business Type</span>
+                      <span className="text-primary-container/70">{app.businessType}</span>
                     </div>
                     <div>
-                      <span className="text-xs uppercase tracking-widest text-[#1A3322] block mb-1">Est. Annual Rev.</span>
-                      <span className="text-[#1A3322]/70">{app.revenue}</span>
+                      <span className="text-xs uppercase tracking-widest text-primary-container block mb-1">Est. Annual Rev.</span>
+                      <span className="text-primary-container/70">{app.revenue}</span>
                     </div>
                   </div>
 
                   <div className="flex gap-4">
                     <button
                       onClick={() => resolve(app.id, `${app.company} approved to Tier 1.`)}
-                      className="flex-1 bg-[#1A3322] text-[#FDFBF7] text-xs uppercase tracking-widest py-3 px-4 rounded hover:bg-[#D4AF37] transition-colors"
+                      className="flex-1 bg-primary-container text-background text-xs uppercase tracking-widest py-3 px-4 rounded-full hover:bg-primary-container/90 transition-colors"
                     >
                       Approve to Tier 1
                     </button>
                     <button
                       onClick={() => resolve(app.id, `${app.company} approved to Tier 2.`)}
-                      className="flex-1 border border-[#1A3322] text-[#1A3322] text-xs uppercase tracking-widest py-3 px-4 rounded hover:bg-[#E6DEC9]/10 transition-colors"
+                      className="flex-1 border border-primary-container text-primary-container text-xs uppercase tracking-widest py-3 px-4 rounded-full hover:bg-surface-container-highest/10 transition-colors"
                     >
                       Approve to Tier 2
                     </button>
                   </div>
                   <button
-                    onClick={() => resolve(app.id, `${app.company} application rejected.`)}
-                    className="w-full text-red-700 border border-red-300 bg-red-50 text-xs uppercase tracking-widest py-3 px-4 rounded hover:bg-red-100 transition-colors"
+                    onClick={() => handleReject(app.id, app.company)}
+                    className="w-full text-red-700 border border-red-300 bg-red-50 text-xs uppercase tracking-widest py-3 px-4 rounded-full hover:bg-red-100 transition-colors"
                   >
                     Reject Application
                   </button>
@@ -108,7 +117,7 @@ export default function ApplicationsReviewPage() {
       </main>
 
       {toast && (
-        <div className="fixed bottom-8 right-8 bg-[#1A3322] text-[#FDFBF7] px-6 py-4 rounded shadow-lg text-sm z-50">
+        <div className="fixed bottom-8 right-8 bg-primary-container text-background px-6 py-4 rounded-xl shadow-luxury text-sm z-50">
           {toast}
         </div>
       )}

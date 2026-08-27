@@ -2,7 +2,18 @@
 import { useState, useMemo } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
 
-const orders = [
+type Order = {
+  id: string;
+  date: string;
+  area: string;
+  territory: string;
+  total: string;
+  payment: string;
+  provider: string;
+  status: string;
+};
+
+const initialOrders: Order[] = [
   { id: "#HR-9021", date: "Oct 24, 2024", area: "Lahore, Gulberg", territory: "Punjab", total: "PKR 12,450", payment: "JazzCash Verified", provider: "Trax", status: "Processing" },
   { id: "#HR-9020", date: "Oct 24, 2024", area: "Karachi, DHA", territory: "Sindh", total: "PKR 24,900", payment: "COD Pending", provider: "Leopards", status: "Awaiting Confirmation" },
   { id: "#HR-9019", date: "Oct 23, 2024", area: "Islamabad, F-8", territory: "Punjab", total: "PKR 8,200", payment: "JazzCash Verified", provider: "Trax", status: "Dispatched" },
@@ -10,8 +21,8 @@ const orders = [
 ];
 
 const paymentStyles: Record<string, string> = {
-  "JazzCash Verified": "bg-[#1A3322]/10 text-[#1A3322]",
-  "COD Pending": "bg-[#E6DEC9]/40 text-[#1A3322]/70",
+  "JazzCash Verified": "bg-primary-container/10 text-primary-container",
+  "COD Pending": "bg-surface-container-highest/40 text-primary-container/70",
   "Payment Failed": "bg-red-100 text-red-700",
 };
 
@@ -22,9 +33,16 @@ const paymentIcons: Record<string, string> = {
 };
 
 export default function OrdersDeskPage() {
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [territory, setTerritory] = useState("All Territories");
   const [payment, setPayment] = useState("All Payment Statuses");
   const [provider, setProvider] = useState("All Providers");
+  const [toast, setToast] = useState<string | null>(null);
+
+  const notify = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const filtered = useMemo(() => {
     return orders.filter((o) => {
@@ -33,7 +51,7 @@ export default function OrdersDeskPage() {
       if (provider !== "All Providers" && o.provider !== provider) return false;
       return true;
     });
-  }, [territory, payment, provider]);
+  }, [orders, territory, payment, provider]);
 
   const resetFilters = () => {
     setTerritory("All Territories");
@@ -41,86 +59,105 @@ export default function OrdersDeskPage() {
     setProvider("All Providers");
   };
 
+  const updateStatus = (id: string, newStatus: string) => {
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o)));
+    notify(`${id} status updated to ${newStatus}.`);
+  };
+
   return (
-    <div className="flex bg-[#FDFBF7] min-h-screen">
+    <div className="flex bg-background min-h-screen">
       <AdminSidebar />
-      <main className="flex-1 md:ml-64 min-h-screen">
+      <main className="flex-1 md:ml-64 min-h-screen pt-16 md:pt-0">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-8 md:py-12">
-          <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#E6DEC9]/40 pb-6">
+          <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-surface-container-highest/40 pb-6">
             <div>
-              <h2 className="font-serif text-3xl md:text-4xl text-[#1A3322] mb-2">Domestic Orders Desk</h2>
-              <p className="text-sm text-[#1A3322]/70 max-w-2xl">Manage and track B2C fulfillment operations across regional territories.</p>
+              <h2 className="font-serif text-3xl md:text-4xl text-primary-container mb-2">Domestic Orders Desk</h2>
+              <p className="text-sm text-primary-container/70 max-w-2xl">Manage and track B2C fulfillment operations across regional territories.</p>
             </div>
             <div className="flex gap-4">
-              <button className="border border-[#1A3322] text-[#1A3322] px-6 py-3 text-xs uppercase tracking-widest hover:bg-[#E6DEC9]/10 transition-colors">Export CSV</button>
-              <button className="bg-[#1A3322] text-[#FDFBF7] px-6 py-3 text-xs uppercase tracking-widest hover:bg-[#D4AF37] transition-colors">Generate Manifest</button>
+              <button
+                onClick={() => notify("Demo only — CSV export not wired yet.")}
+                className="border border-primary-container text-primary-container rounded-full px-6 py-3 text-xs uppercase tracking-widest hover:bg-surface-container-highest/10 transition-colors"
+              >
+                Export CSV
+              </button>
+              <button
+                onClick={() => notify("Demo only — manifest generation not wired yet.")}
+                className="bg-primary-container text-background rounded-full px-6 py-3 text-xs uppercase tracking-widest hover:bg-primary-container/90 transition-colors"
+              >
+                Generate Manifest
+              </button>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white p-6 border border-[#E6DEC9]/40 rounded">
-              <span className="text-xs uppercase tracking-widest text-[#1A3322]/60 mb-2 block">Pending Fulfillment</span>
-              <span className="font-serif text-3xl text-[#1A3322]">142</span>
-              <p className="text-xs text-[#1A3322] mt-2">↑ 12% vs last week</p>
+            <div className="bg-surface-container-lowest p-6 border border-surface-container-highest/40 rounded-xl">
+              <span className="text-xs uppercase tracking-widest text-primary-container/60 mb-2 block">Pending Fulfillment</span>
+              <span className="font-serif text-3xl text-primary-container">142</span>
+              <p className="text-xs text-primary-container mt-2">↑ 12% vs last week</p>
             </div>
-            <div className="bg-white p-6 border border-[#E6DEC9]/40 rounded">
-              <span className="text-xs uppercase tracking-widest text-[#1A3322]/60 mb-2 block">COD Pending Verification</span>
-              <span className="font-serif text-3xl text-[#1A3322]">38</span>
-              <p className="text-xs text-[#D4AF37] mt-2">Requires action</p>
+            <div className="bg-surface-container-lowest p-6 border border-surface-container-highest/40 rounded-xl">
+              <span className="text-xs uppercase tracking-widest text-primary-container/60 mb-2 block">COD Pending Verification</span>
+              <span className="font-serif text-3xl text-primary-container">38</span>
+              <p className="text-xs text-accent-gold mt-2">Requires action</p>
             </div>
-            <div className="lg:col-span-2 bg-white p-6 border border-[#E6DEC9]/40 rounded flex flex-col justify-center gap-4">
+            <div className="lg:col-span-2 bg-surface-container-lowest p-6 border border-surface-container-highest/40 rounded-xl flex flex-col justify-center gap-4">
               <div className="flex flex-wrap gap-4 items-center">
-                <select value={territory} onChange={(e) => setTerritory(e.target.value)} className="bg-[#FDFBF7] border border-[#E6DEC9] rounded px-3 py-2 text-sm text-[#1A3322]">
+                <select value={territory} onChange={(e) => setTerritory(e.target.value)} className="bg-background border border-surface-container-highest rounded-lg px-3 py-2 text-sm text-primary-container">
                   <option>All Territories</option>
                   <option>Punjab</option>
                   <option>Sindh</option>
                   <option>KPK</option>
                 </select>
-                <select value={payment} onChange={(e) => setPayment(e.target.value)} className="bg-[#FDFBF7] border border-[#E6DEC9] rounded px-3 py-2 text-sm text-[#1A3322]">
+                <select value={payment} onChange={(e) => setPayment(e.target.value)} className="bg-background border border-surface-container-highest rounded-lg px-3 py-2 text-sm text-primary-container">
                   <option>All Payment Statuses</option>
                   <option>JazzCash Verified</option>
                   <option>COD Pending</option>
                   <option>Payment Failed</option>
                 </select>
-                <select value={provider} onChange={(e) => setProvider(e.target.value)} className="bg-[#FDFBF7] border border-[#E6DEC9] rounded px-3 py-2 text-sm text-[#1A3322]">
+                <select value={provider} onChange={(e) => setProvider(e.target.value)} className="bg-background border border-surface-container-highest rounded-lg px-3 py-2 text-sm text-primary-container">
                   <option>All Providers</option>
                   <option>Trax</option>
                   <option>Leopards</option>
                 </select>
-                <button onClick={resetFilters} className="text-[#1A3322] underline text-sm ml-auto hover:text-[#D4AF37] transition-colors">Reset Filters</button>
+                <button onClick={resetFilters} className="text-primary-container underline text-sm ml-auto hover:text-accent-gold transition-colors">Reset Filters</button>
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-[#E6DEC9]/40 rounded overflow-x-auto">
+          <div className="bg-surface-container-lowest border border-surface-container-highest/40 rounded-xl overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="border-b border-[#E6DEC9]/50 bg-[#E6DEC9]/10">
+                <tr className="border-b border-surface-container-highest/50 bg-surface-container-highest/10">
                   {["Order ID", "Date", "Delivery Area", "Total Value", "Payment Status", "Provider", "Action"].map((h) => (
-                    <th key={h} className="p-4 text-xs uppercase tracking-widest text-[#1A3322]">{h}</th>
+                    <th key={h} className="p-4 text-xs uppercase tracking-widest text-primary-container">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-[#1A3322]/50">No orders match the current filters.</td>
+                    <td colSpan={7} className="p-8 text-center text-primary-container/50">No orders match the current filters.</td>
                   </tr>
                 ) : (
                   filtered.map((o) => (
-                    <tr key={o.id} className="border-b border-[#E6DEC9]/30 hover:bg-[#E6DEC9]/10 transition-colors">
-                      <td className="p-4 text-[#1A3322] font-semibold">{o.id}</td>
-                      <td className="p-4 text-[#1A3322]/70">{o.date}</td>
-                      <td className="p-4 text-[#1A3322]/70">{o.area}</td>
-                      <td className="p-4 text-[#1A3322]">{o.total}</td>
+                    <tr key={o.id} className="border-b border-surface-container-highest/30 hover:bg-surface-container-highest/10 transition-colors">
+                      <td className="p-4 text-primary-container font-semibold">{o.id}</td>
+                      <td className="p-4 text-primary-container/70">{o.date}</td>
+                      <td className="p-4 text-primary-container/70">{o.area}</td>
+                      <td className="p-4 text-primary-container">{o.total}</td>
                       <td className="p-4">
-                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold ${paymentStyles[o.payment]}`}>
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${paymentStyles[o.payment]}`}>
                           <span className="material-symbols-outlined text-[14px]">{paymentIcons[o.payment]}</span> {o.payment}
                         </span>
                       </td>
-                      <td className="p-4 text-[#1A3322]/70">{o.provider}</td>
+                      <td className="p-4 text-primary-container/70">{o.provider}</td>
                       <td className="p-4 text-right">
-                        <select defaultValue={o.status} className="bg-[#FDFBF7] border border-[#E6DEC9] rounded text-xs px-2 py-1 text-[#1A3322]">
+                        <select
+                          value={o.status}
+                          onChange={(e) => updateStatus(o.id, e.target.value)}
+                          className="bg-background border border-surface-container-highest rounded-lg text-xs px-2 py-1 text-primary-container"
+                        >
                           <option>{o.status}</option>
                           <option>Processing</option>
                           <option>Dispatched</option>
@@ -132,16 +169,22 @@ export default function OrdersDeskPage() {
                 )}
               </tbody>
             </table>
-            <div className="p-4 border-t border-[#E6DEC9]/40 flex justify-between items-center text-sm text-[#1A3322]/60">
-              <span>Showing {filtered.length} of 142 orders</span>
+            <div className="p-4 border-t border-surface-container-highest/40 flex justify-between items-center text-sm text-primary-container/60">
+              <span>Showing {filtered.length} of {orders.length} orders</span>
               <div className="flex gap-2">
-                <button disabled className="px-3 py-1 border border-[#E6DEC9] rounded opacity-50">Prev</button>
-                <button className="px-3 py-1 border border-[#E6DEC9] rounded hover:bg-[#E6DEC9]/10 transition-colors">Next</button>
+                <button disabled className="px-3 py-1 border border-surface-container-highest rounded-lg opacity-50">Prev</button>
+                <button disabled className="px-3 py-1 border border-surface-container-highest rounded-lg opacity-50">Next</button>
               </div>
             </div>
           </div>
         </div>
       </main>
+
+      {toast && (
+        <div className="fixed bottom-8 right-8 bg-primary-container text-background px-6 py-4 rounded-xl shadow-luxury text-sm z-50">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

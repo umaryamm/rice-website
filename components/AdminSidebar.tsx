@@ -1,58 +1,47 @@
-"use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import AdminSidebar from "@/components/AdminSidebar";
 
-const navItems = [
-  { href: "/admin", label: "Overview", icon: "dashboard" },
-  { href: "/admin/orders", label: "B2C Orders Desk", icon: "receipt_long" },
-  { href: "/admin/exports", label: "Export Ledger", icon: "sailing" },
-  { href: "/admin/applications", label: "Distributor Applications", icon: "assignment_ind" },
+const metrics = [
+  { label: "Total Gross Domestic Revenue (PKR)", value: "4.2B", icon: "payments", trend: "+12%", trendLabel: "vs last quarter", up: true },
+  { label: "Active Int. Freight Exports (FCL)", value: "184", icon: "flight_takeoff", trend: "+5%", trendLabel: "vs last month", up: true },
+  { label: "Pending Distributor Apps", value: "5", icon: "assignment_ind", trend: null, trendLabel: "Requires review", up: null },
+  { label: "Total Combined Milling Stock (MT)", value: "12,500", icon: "warehouse", trend: "-2%", trendLabel: "seasonal adjustment", up: false },
 ];
 
-export default function AdminSidebar() {
-  const pathname = usePathname();
-
+export default function AdminOverviewPage() {
   return (
-    <nav className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-white border-r border-[#E6DEC9]/40 z-50">
-      <div className="p-6 border-b border-[#E6DEC9]/40">
-        <h1 className="font-serif text-lg text-[#1A3322]">Heritage Rice Co.</h1>
-        <p className="text-xs text-[#1A3322]/60 mt-1">Admin Console</p>
-      </div>
+    <div className="flex bg-background min-h-screen">
+      <AdminSidebar />
+      <main className="flex-1 md:ml-64 min-h-screen pt-16 md:pt-0">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12 md:py-16">
+          <header className="mb-12 flex justify-between items-end border-b border-surface-container-highest/40 pb-6">
+            <div>
+              <h2 className="font-serif text-4xl md:text-5xl text-primary-container">Overview</h2>
+              <p className="font-body-md text-primary-container/70 mt-2">Main admin dashboard metrics for Heritage Rice Co.</p>
+            </div>
+          </header>
 
-      <div className="flex-1 py-4">
-        {navItems.map((item) => {
-          const active = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 pl-6 py-3 transition-all text-sm ${
-                active
-                  ? "text-[#1A3322] font-bold border-l-4 border-[#D4AF37] bg-[#E6DEC9]/20"
-                  : "text-[#1A3322]/70 border-l-4 border-transparent hover:bg-[#E6DEC9]/10 hover:text-[#1A3322]"
-              }`}
-            >
-              <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
-              {item.label}
-            </Link>
-          );
-        })}
-      </div>
-
-      <div className="p-4 border-t border-[#E6DEC9]/40 space-y-1">
-        <Link href="/admin/settings" className="flex items-center gap-3 pl-2 py-2 text-[#1A3322]/70 hover:text-[#1A3322] transition-colors text-sm">
-          <span className="material-symbols-outlined text-[20px]">settings</span> Settings
-        </Link>
-        <Link href="/" className="flex items-center gap-3 pl-2 py-2 text-[#1A3322]/70 hover:text-[#1A3322] transition-colors text-sm">
-          <span className="material-symbols-outlined text-[20px]">logout</span> Logout
-        </Link>
-        <div className="flex items-center gap-3 pt-4 mt-4 border-t border-[#E6DEC9]/40 pl-2">
-          <div className="w-8 h-8 rounded-full bg-[#E6DEC9]/40 flex items-center justify-center">
-            <span className="material-symbols-outlined text-[18px] text-[#1A3322]">account_circle</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {metrics.map((m) => (
+              <div key={m.label} className="bg-surface-container-lowest p-6 border border-surface-container-highest/40 rounded-xl hover:border-accent-gold/50 transition-colors">
+                <p className="text-xs uppercase tracking-widest text-primary-container mb-2 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-accent-gold text-[18px]">{m.icon}</span>
+                  {m.label}
+                </p>
+                <h3 className="font-serif text-3xl text-primary-container font-bold">{m.value}</h3>
+                <div className="mt-4 flex items-center text-sm gap-2">
+                  {m.trend && (
+                    <span className={`flex items-center ${m.up ? "text-primary-container" : "text-[#8a6d1f]"}`}>
+                      <span className="material-symbols-outlined text-[16px]">{m.up ? "trending_up" : "trending_down"}</span>
+                      {m.trend}
+                    </span>
+                  )}
+                  <span className="text-primary-container/50">{m.trendLabel}</span>
+                </div>
+              </div>
+            ))}
           </div>
-          <span className="text-xs text-[#1A3322]">Admin User</span>
         </div>
-      </div>
-    </nav>
+      </main>
+    </div>
   );
 }
