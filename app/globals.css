@@ -1,26 +1,142 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/container-queries";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Colors */
+  --color-accent-gold: #D4AF37;
+  --color-secondary: #5f5e5a;
+  --color-on-secondary-fixed: #1c1c18;
+  --color-outline: #737973;
+  --color-secondary-fixed-dim: #c9c6c1;
+  --color-secondary-container: #e5e2dc;
+  --color-on-tertiary-fixed: #261900;
+  --color-surface-variant: #f3e0c0;
+  --color-surface-tint: #4d6453;
+  --color-background: #fff8f2;
+  --color-on-error: #ffffff;
+  --color-surface-bright: #fff8f2;
+  --color-tertiary: #211500;
+  --color-on-tertiary-fixed-variant: #5d4201;
+  --color-surface-container-high: #f9e6c5;
+  --color-inverse-surface: #392f19;
+  --color-on-tertiary: #ffffff;
+  --color-on-primary-fixed: #0b2013;
+  --color-primary-fixed: #d0e9d4;
+  --color-outline-variant: #c3c8c1;
+  --color-primary: #061b0e;
+  --color-on-tertiary-container: #b18d48;
+  --color-error: #ba1a1a;
+  --color-on-secondary: #ffffff;
+  --color-on-surface-variant: #434843;
+  --color-inverse-on-surface: #ffefd4;
+  --color-surface-container-lowest: #ffffff;
+  --color-primary-fixed-dim: #b4cdb8;
+  --color-on-primary-fixed-variant: #364c3c;
+  --color-surface-container-highest: #f3e0c0;
+  --color-tertiary-fixed-dim: #e9c176;
+  --color-error-container: #ffdad6;
+  --color-tertiary-fixed: #ffdea5;
+  --color-on-surface: #231a06;
+  --color-tertiary-container: #3a2800;
+  --color-inverse-primary: #b4cdb8;
+  --color-on-secondary-fixed-variant: #474743;
+  --color-primary-container: #1b3022;
+  --color-on-error-container: #93000a;
+  --color-surface: #fff8f2;
+  --color-on-background: #231a06;
+  --color-secondary-fixed: #e5e2dc;
+  --color-surface-container: #ffeccb;
+  --color-surface-container-low: #fff2de;
+  --color-on-secondary-container: #656460;
+  --color-surface-dim: #ead8b8;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #819986;
+
+
+  /* Spacing */
+  --spacing-section-gap: 160px;
+  --spacing-container-max: 1440px;
+  --spacing-gutter: 32px;
+  --spacing-margin-mobile: 20px;
+  --spacing-margin-desktop: 80px;
+
+  /* Radius */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  /* Fonts (var(--font-bodoni) / --font-inter / --font-fraunces come from next/font in layout.tsx) */
+  --font-display-lg: var(--font-bodoni);
+  --font-body-lg: var(--font-inter);
+  --font-body-md: var(--font-inter);
+  --font-display-lg-mobile: var(--font-bodoni);
+  --font-headline-md: var(--font-bodoni);
+  --font-label-caps: var(--font-inter);
+  --font-headline-sm: var(--font-bodoni);
+  --font-technical-data: var(--font-inter);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-bodoni);
+  --font-logo: var(--font-fraunces);
+
+  /* Font sizes — v4 pairs each size with companion properties */
+  --text-display-lg: 80px;
+  --text-display-lg--line-height: 96px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 600;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 32px;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 400;
+
+  --text-display-lg-mobile: 48px;
+  --text-display-lg-mobile--line-height: 56px;
+  --text-display-lg-mobile--letter-spacing: -0.01em;
+  --text-display-lg-mobile--font-weight: 600;
+
+  --text-headline-md: 48px;
+  --text-headline-md--line-height: 56px;
+  --text-headline-md--font-weight: 500;
+
+  --text-label-caps: 12px;
+  --text-label-caps--line-height: 16px;
+  --text-label-caps--letter-spacing: 0.1em;
+  --text-label-caps--font-weight: 600;
+
+  --text-headline-sm: 32px;
+  --text-headline-sm--line-height: 40px;
+  --text-headline-sm--font-weight: 500;
+
+  --text-technical-data: 14px;
+  --text-technical-data--line-height: 20px;
+  --text-technical-data--font-weight: 500;
+
+  /* Shadow */
+  --shadow-luxury: 0px 20px 40px rgba(27, 48, 34, 0.05);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.text-balance { text-wrap: balance; }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes slow-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
 }
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-fade-up {
+  animation: fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-fade-up-delay {
+  animation: fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up, .animate-fade-up-delay { animation: none; opacity: 1; transform: none; }
+  img { animation: none !important; }
 }
