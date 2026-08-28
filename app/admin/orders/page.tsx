@@ -2,6 +2,9 @@
 import { useState, useMemo } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
 
+export const dynamic = "force-dynamic";
+
+
 type Order = {
   id: string;
   date: string;

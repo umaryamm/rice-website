@@ -3,6 +3,9 @@ import { useState } from "react";
 import Image from "next/image";
 import B2BSidebar from "@/components/B2BSidebar";
 
+export const dynamic = "force-dynamic";
+
+
 const varieties = [
   { id: "basmati-1121-white", name: "Basmati 1121 (White)", grainLength: "8.35mm min", broken: "< 1.0% max", moisture: "12.5% max", packaging: "25kg / 50kg PP Bags" },
   { id: "basmati-1121-sella", name: "Basmati 1121 (Sella)", grainLength: "8.30mm min", broken: "< 1.0% max", moisture: "12.5% max", packaging: "25kg / 50kg PP Bags" },

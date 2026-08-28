@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
+
 const DEMO_EMAIL = "demo@heritagericeco.com";
 const DEMO_PASSWORD = "heritage2024";
 

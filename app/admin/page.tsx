@@ -1,5 +1,8 @@
 import AdminSidebar from "@/components/AdminSidebar";
 
+export const dynamic = "force-dynamic";
+
+
 const metrics = [
   { label: "Total Gross Domestic Revenue (PKR)", value: "4.2B", icon: "payments", trend: "+12%", trendLabel: "vs last quarter", up: true },
   { label: "Active Int. Freight Exports (FCL)", value: "184", icon: "flight_takeoff", trend: "+5%", trendLabel: "vs last month", up: true },

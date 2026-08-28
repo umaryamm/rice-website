@@ -3,6 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import B2BSidebar from "@/components/B2BSidebar";
 
+export const dynamic = "force-dynamic";
+
+
 const allocations = [
   { ref: "#HR-8842-A", variety: "Heirloom Basmati Reserve", volume: "120 MT", status: "Confirmed", tone: "confirmed" },
   { ref: "#HR-8841-C", variety: "Jasmine Select", volume: "50 MT", status: "In Transit", tone: "transit" },

@@ -2,6 +2,9 @@
 import { useState, useMemo } from "react";
 import B2BSidebar from "@/components/B2BSidebar";
 
+export const dynamic = "force-dynamic";
+
+
 const invoices = [
   { id: "INV-2024-089", desc: "Bulk Order - Jasmine Premium", date: "Oct 24, 2024", amount: "$42,500.00", status: "Paid" },
   { id: "PRO-2024-112", desc: "Advance - Arborio Reserve", date: "Nov 02, 2024", amount: "$18,200.00", status: "Pending" },
