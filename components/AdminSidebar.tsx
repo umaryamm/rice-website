@@ -1,47 +1,75 @@
-import AdminSidebar from "@/components/AdminSidebar";
+"use client";
 
-const metrics = [
-  { label: "Total Gross Domestic Revenue (PKR)", value: "4.2B", icon: "payments", trend: "+12%", trendLabel: "vs last quarter", up: true },
-  { label: "Active Int. Freight Exports (FCL)", value: "184", icon: "flight_takeoff", trend: "+5%", trendLabel: "vs last month", up: true },
-  { label: "Pending Distributor Apps", value: "5", icon: "assignment_ind", trend: null, trendLabel: "Requires review", up: null },
-  { label: "Total Combined Milling Stock (MT)", value: "12,500", icon: "warehouse", trend: "-2%", trendLabel: "seasonal adjustment", up: false },
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const navItems = [
+  { href: "/admin", label: "Overview", icon: "dashboard" },
+  { href: "/admin/orders", label: "B2C Orders Desk", icon: "receipt_long" },
+  { href: "/admin/export-ledger", label: "Export Ledger", icon: "sailing" },
+  { href: "/admin/applications", label: "Distributor Applications", icon: "assignment_ind" },
+  { href: "/admin/products", label: "Products", icon: "inventory_2" },
 ];
 
-export default function AdminOverviewPage() {
-  return (
-    <div className="flex bg-background min-h-screen">
-      <AdminSidebar />
-      <main className="flex-1 md:ml-64 min-h-screen pt-16 md:pt-0">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12 md:py-16">
-          <header className="mb-12 flex justify-between items-end border-b border-surface-container-highest/40 pb-6">
-            <div>
-              <h2 className="font-serif text-4xl md:text-5xl text-primary-container">Overview</h2>
-              <p className="font-body-md text-primary-container/70 mt-2">Main admin dashboard metrics for Heritage Rice Co.</p>
-            </div>
-          </header>
+export default function AdminSidebar() {
+  const pathname = usePathname();
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {metrics.map((m) => (
-              <div key={m.label} className="bg-surface-container-lowest p-6 border border-surface-container-highest/40 rounded-xl hover:border-accent-gold/50 transition-colors">
-                <p className="text-xs uppercase tracking-widest text-primary-container mb-2 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-accent-gold text-[18px]">{m.icon}</span>
-                  {m.label}
-                </p>
-                <h3 className="font-serif text-3xl text-primary-container font-bold">{m.value}</h3>
-                <div className="mt-4 flex items-center text-sm gap-2">
-                  {m.trend && (
-                    <span className={`flex items-center ${m.up ? "text-primary-container" : "text-[#8a6d1f]"}`}>
-                      <span className="material-symbols-outlined text-[16px]">{m.up ? "trending_up" : "trending_down"}</span>
-                      {m.trend}
-                    </span>
-                  )}
-                  <span className="text-primary-container/50">{m.trendLabel}</span>
-                </div>
-              </div>
-            ))}
+  return (
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-[#eadfce] bg-[#fffaf4] md:flex md:flex-col">
+      <div className="border-b border-[#eadfce] px-6 py-6">
+        <Link href="/admin" className="block">
+          <div className="text-[17px] font-medium tracking-tight text-[#16302e]">
+            Heritage Rice Co.
           </div>
-        </div>
-      </main>
-    </div>
+          <div className="mt-1 text-[9px] uppercase tracking-[0.22em] text-[#9b8a72]">
+            Administration
+          </div>
+        </Link>
+      </div>
+
+      <div className="px-5 pt-6">
+        <p className="mb-4 text-[9px] uppercase tracking-[0.22em] text-[#9b8a72]">
+          Admin
+        </p>
+
+        <nav className="space-y-1">
+          {navItems.map((item) => {
+            const active =
+              item.href === "/admin"
+                ? pathname === "/admin"
+                : pathname.startsWith(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-[12px] transition-colors ${
+                  active
+                    ? "bg-[#f2eadf] font-medium text-[#16302e]"
+                    : "text-[#52605a] hover:bg-[#f7f0e7] hover:text-[#16302e]"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  {item.icon}
+                </span>
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      <div className="mt-auto border-t border-[#eadfce] px-5 py-5">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-[11px] text-[#68736d] hover:text-[#16302e]"
+        >
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#262626] text-[11px] text-white">
+            N
+          </span>
+          <span>Back to website</span>
+        </Link>
+      </div>
+    </aside>
   );
 }

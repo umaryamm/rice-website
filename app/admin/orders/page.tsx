@@ -1,193 +1,316 @@
 "use client";
-import { useState, useMemo } from "react";
+
+import { useMemo, useState } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
 
-export const dynamic = "force-dynamic";
-
+type OrderStatus =
+  | "Processing"
+  | "Confirmed"
+  | "Shipped"
+  | "Delivered"
+  | "Cancelled";
 
 type Order = {
   id: string;
-  date: string;
-  area: string;
-  territory: string;
+  customer: string;
+  email: string;
+  product: string;
+  quantity: number;
   total: string;
-  payment: string;
-  provider: string;
-  status: string;
+  date: string;
+  status: OrderStatus;
 };
 
 const initialOrders: Order[] = [
-  { id: "#HR-9021", date: "Oct 24, 2024", area: "Lahore, Gulberg", territory: "Punjab", total: "PKR 12,450", payment: "JazzCash Verified", provider: "Trax", status: "Processing" },
-  { id: "#HR-9020", date: "Oct 24, 2024", area: "Karachi, DHA", territory: "Sindh", total: "PKR 24,900", payment: "COD Pending", provider: "Leopards", status: "Awaiting Confirmation" },
-  { id: "#HR-9019", date: "Oct 23, 2024", area: "Islamabad, F-8", territory: "Punjab", total: "PKR 8,200", payment: "JazzCash Verified", provider: "Trax", status: "Dispatched" },
-  { id: "#HR-9018", date: "Oct 23, 2024", area: "Peshawar, Hayatabad", territory: "KPK", total: "PKR 15,600", payment: "Payment Failed", provider: "-", status: "On Hold" },
+  {
+    id: "HRC-1048",
+    customer: "Ayesha Khan",
+    email: "ayesha@example.com",
+    product: "Heritage Sella Basmati",
+    quantity: 4,
+    total: "PKR 9,800",
+    date: "28 Aug 2026",
+    status: "Processing",
+  },
+  {
+    id: "HRC-1047",
+    customer: "Muhammad Ali",
+    email: "muhammad@example.com",
+    product: "Terrace Reserve White Basmati",
+    quantity: 2,
+    total: "PKR 6,200",
+    date: "28 Aug 2026",
+    status: "Confirmed",
+  },
+  {
+    id: "HRC-1046",
+    customer: "Sara Ahmed",
+    email: "sara@example.com",
+    product: "Heritage Sella Basmati",
+    quantity: 6,
+    total: "PKR 14,700",
+    date: "27 Aug 2026",
+    status: "Shipped",
+  },
+  {
+    id: "HRC-1045",
+    customer: "Omar Farooq",
+    email: "omar@example.com",
+    product: "Terrace Reserve White Basmati",
+    quantity: 3,
+    total: "PKR 9,300",
+    date: "27 Aug 2026",
+    status: "Delivered",
+  },
+  {
+    id: "HRC-1044",
+    customer: "Hina Malik",
+    email: "hina@example.com",
+    product: "Heritage Sella Basmati",
+    quantity: 2,
+    total: "PKR 4,900",
+    date: "26 Aug 2026",
+    status: "Cancelled",
+  },
 ];
 
-const paymentStyles: Record<string, string> = {
-  "JazzCash Verified": "bg-primary-container/10 text-primary-container",
-  "COD Pending": "bg-surface-container-highest/40 text-primary-container/70",
-  "Payment Failed": "bg-red-100 text-red-700",
+const statusStyles: Record<OrderStatus, string> = {
+  Processing: "border-[#d9bd83] bg-[#fff7e6] text-[#80621f]",
+  Confirmed: "border-[#b7cdbd] bg-[#f0f7f1] text-[#315c48]",
+  Shipped: "border-[#b8c8d5] bg-[#f1f6fa] text-[#39566b]",
+  Delivered: "border-[#b7cdbd] bg-[#f0f7f1] text-[#315c48]",
+  Cancelled: "border-[#dfb6b0] bg-[#fff2f0] text-[#8a3e35]",
 };
 
-const paymentIcons: Record<string, string> = {
-  "JazzCash Verified": "check_circle",
-  "COD Pending": "pending",
-  "Payment Failed": "error",
-};
+export default function AdminOrdersPage() {
+  const [orders, setOrders] = useState(initialOrders);
+  const [statusFilter, setStatusFilter] = useState<"All" | OrderStatus>(
+    "All"
+  );
+  const [search, setSearch] = useState("");
 
-export default function OrdersDeskPage() {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
-  const [territory, setTerritory] = useState("All Territories");
-  const [payment, setPayment] = useState("All Payment Statuses");
-  const [provider, setProvider] = useState("All Providers");
-  const [toast, setToast] = useState<string | null>(null);
+  const filteredOrders = useMemo(() => {
+    const query = search.trim().toLowerCase();
 
-  const notify = (message: string) => {
-    setToast(message);
-    setTimeout(() => setToast(null), 3000);
-  };
+    return orders.filter((order) => {
+      const matchesStatus =
+        statusFilter === "All" || order.status === statusFilter;
 
-  const filtered = useMemo(() => {
-    return orders.filter((o) => {
-      if (territory !== "All Territories" && o.territory !== territory) return false;
-      if (payment !== "All Payment Statuses" && o.payment !== payment) return false;
-      if (provider !== "All Providers" && o.provider !== provider) return false;
-      return true;
+      const matchesSearch =
+        !query ||
+        order.id.toLowerCase().includes(query) ||
+        order.customer.toLowerCase().includes(query) ||
+        order.email.toLowerCase().includes(query) ||
+        order.product.toLowerCase().includes(query);
+
+      return matchesStatus && matchesSearch;
     });
-  }, [orders, territory, payment, provider]);
+  }, [orders, search, statusFilter]);
 
-  const resetFilters = () => {
-    setTerritory("All Territories");
-    setPayment("All Payment Statuses");
-    setProvider("All Providers");
-  };
-
-  const updateStatus = (id: string, newStatus: string) => {
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o)));
-    notify(`${id} status updated to ${newStatus}.`);
-  };
+  function updateStatus(id: string, status: OrderStatus) {
+    setOrders((current) =>
+      current.map((order) =>
+        order.id === id ? { ...order, status } : order
+      )
+    );
+  }
 
   return (
-    <div className="flex bg-background min-h-screen">
+    <div className="min-h-screen bg-[#fffaf4]">
       <AdminSidebar />
-      <main className="flex-1 md:ml-64 min-h-screen pt-16 md:pt-0">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-8 md:py-12">
-          <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-surface-container-highest/40 pb-6">
-            <div>
-              <h2 className="font-serif text-3xl md:text-4xl text-primary-container mb-2">Domestic Orders Desk</h2>
-              <p className="text-sm text-primary-container/70 max-w-2xl">Manage and track B2C fulfillment operations across regional territories.</p>
-            </div>
-            <div className="flex gap-4">
-              <button
-                onClick={() => notify("Demo only — CSV export not wired yet.")}
-                className="border border-primary-container text-primary-container rounded-full px-6 py-3 text-xs uppercase tracking-widest hover:bg-surface-container-highest/10 transition-colors"
-              >
-                Export CSV
-              </button>
-              <button
-                onClick={() => notify("Demo only — manifest generation not wired yet.")}
-                className="bg-primary-container text-background rounded-full px-6 py-3 text-xs uppercase tracking-widest hover:bg-primary-container/90 transition-colors"
-              >
-                Generate Manifest
-              </button>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-surface-container-lowest p-6 border border-surface-container-highest/40 rounded-xl">
-              <span className="text-xs uppercase tracking-widest text-primary-container/60 mb-2 block">Pending Fulfillment</span>
-              <span className="font-serif text-3xl text-primary-container">142</span>
-              <p className="text-xs text-primary-container mt-2">↑ 12% vs last week</p>
-            </div>
-            <div className="bg-surface-container-lowest p-6 border border-surface-container-highest/40 rounded-xl">
-              <span className="text-xs uppercase tracking-widest text-primary-container/60 mb-2 block">COD Pending Verification</span>
-              <span className="font-serif text-3xl text-primary-container">38</span>
-              <p className="text-xs text-accent-gold mt-2">Requires action</p>
-            </div>
-            <div className="lg:col-span-2 bg-surface-container-lowest p-6 border border-surface-container-highest/40 rounded-xl flex flex-col justify-center gap-4">
-              <div className="flex flex-wrap gap-4 items-center">
-                <select value={territory} onChange={(e) => setTerritory(e.target.value)} className="bg-background border border-surface-container-highest rounded-lg px-3 py-2 text-sm text-primary-container">
-                  <option>All Territories</option>
-                  <option>Punjab</option>
-                  <option>Sindh</option>
-                  <option>KPK</option>
-                </select>
-                <select value={payment} onChange={(e) => setPayment(e.target.value)} className="bg-background border border-surface-container-highest rounded-lg px-3 py-2 text-sm text-primary-container">
-                  <option>All Payment Statuses</option>
-                  <option>JazzCash Verified</option>
-                  <option>COD Pending</option>
-                  <option>Payment Failed</option>
-                </select>
-                <select value={provider} onChange={(e) => setProvider(e.target.value)} className="bg-background border border-surface-container-highest rounded-lg px-3 py-2 text-sm text-primary-container">
-                  <option>All Providers</option>
-                  <option>Trax</option>
-                  <option>Leopards</option>
-                </select>
-                <button onClick={resetFilters} className="text-primary-container underline text-sm ml-auto hover:text-accent-gold transition-colors">Reset Filters</button>
+      <main className="min-h-screen md:ml-64">
+        <div className="mx-auto max-w-[1400px] px-6 py-10 md:px-12 md:py-14">
+          <header className="mb-8 border-b border-[#eadfce] pb-6">
+            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+              <div>
+                <h1 className="text-4xl font-normal tracking-tight text-[#16302e]">
+                  B2C Orders Desk
+                </h1>
+
+                <p className="mt-2 text-[13px] text-[#68736d]">
+                  Review customer orders, update fulfilment status, and manage
+                  the retail order queue.
+                </p>
+              </div>
+
+              <div className="rounded-full border border-[#eadfce] bg-white px-4 py-2 text-[11px] text-[#52605a]">
+                {orders.length} total orders
               </div>
             </div>
-          </div>
+          </header>
 
-          <div className="bg-surface-container-lowest border border-surface-container-highest/40 rounded-xl overflow-x-auto">
-            <table className="w-full text-left border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-surface-container-highest/50 bg-surface-container-highest/10">
-                  {["Order ID", "Date", "Delivery Area", "Total Value", "Payment Status", "Provider", "Action"].map((h) => (
-                    <th key={h} className="p-4 text-xs uppercase tracking-widest text-primary-container">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="p-8 text-center text-primary-container/50">No orders match the current filters.</td>
+          <section className="mb-5 grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="rounded-xl border border-[#eadfce] bg-white p-5">
+              <p className="text-[9px] uppercase tracking-[0.16em] text-[#9b8a72]">
+                Total
+              </p>
+              <p className="mt-2 text-2xl text-[#16302e]">{orders.length}</p>
+            </div>
+
+            <div className="rounded-xl border border-[#eadfce] bg-white p-5">
+              <p className="text-[9px] uppercase tracking-[0.16em] text-[#9b8a72]">
+                Processing
+              </p>
+              <p className="mt-2 text-2xl text-[#16302e]">
+                {orders.filter((o) => o.status === "Processing").length}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-[#eadfce] bg-white p-5">
+              <p className="text-[9px] uppercase tracking-[0.16em] text-[#9b8a72]">
+                Shipped
+              </p>
+              <p className="mt-2 text-2xl text-[#16302e]">
+                {orders.filter((o) => o.status === "Shipped").length}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-[#eadfce] bg-white p-5">
+              <p className="text-[9px] uppercase tracking-[0.16em] text-[#9b8a72]">
+                Delivered
+              </p>
+              <p className="mt-2 text-2xl text-[#16302e]">
+                {orders.filter((o) => o.status === "Delivered").length}
+              </p>
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-[#eadfce] bg-white">
+            <div className="flex flex-col gap-4 border-b border-[#eadfce] p-5 md:flex-row md:items-center md:justify-between">
+              <div className="relative w-full md:max-w-sm">
+                <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9b9186]">
+                  search
+                </span>
+
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search orders..."
+                  className="w-full rounded-md border border-[#dfd4c5] bg-[#fffaf4] py-2.5 pl-10 pr-3 text-[12px] text-[#16302e] outline-none placeholder:text-[#a59b90] focus:border-[#b8860b]"
+                />
+              </div>
+
+              <select
+                value={statusFilter}
+                onChange={(e) =>
+                  setStatusFilter(e.target.value as "All" | OrderStatus)
+                }
+                className="rounded-md border border-[#dfd4c5] bg-[#fffaf4] px-4 py-2.5 text-[12px] text-[#16302e] outline-none focus:border-[#b8860b]"
+              >
+                <option value="All">All statuses</option>
+                <option value="Processing">Processing</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[900px] border-collapse">
+                <thead>
+                  <tr className="border-b border-[#eadfce] bg-[#fffaf4] text-left">
+                    <th className="px-5 py-3 text-[9px] uppercase tracking-[0.14em] text-[#6f776f]">
+                      Order
+                    </th>
+                    <th className="px-5 py-3 text-[9px] uppercase tracking-[0.14em] text-[#6f776f]">
+                      Customer
+                    </th>
+                    <th className="px-5 py-3 text-[9px] uppercase tracking-[0.14em] text-[#6f776f]">
+                      Product
+                    </th>
+                    <th className="px-5 py-3 text-[9px] uppercase tracking-[0.14em] text-[#6f776f]">
+                      Qty
+                    </th>
+                    <th className="px-5 py-3 text-[9px] uppercase tracking-[0.14em] text-[#6f776f]">
+                      Total
+                    </th>
+                    <th className="px-5 py-3 text-[9px] uppercase tracking-[0.14em] text-[#6f776f]">
+                      Date
+                    </th>
+                    <th className="px-5 py-3 text-[9px] uppercase tracking-[0.14em] text-[#6f776f]">
+                      Status
+                    </th>
                   </tr>
-                ) : (
-                  filtered.map((o) => (
-                    <tr key={o.id} className="border-b border-surface-container-highest/30 hover:bg-surface-container-highest/10 transition-colors">
-                      <td className="p-4 text-primary-container font-semibold">{o.id}</td>
-                      <td className="p-4 text-primary-container/70">{o.date}</td>
-                      <td className="p-4 text-primary-container/70">{o.area}</td>
-                      <td className="p-4 text-primary-container">{o.total}</td>
-                      <td className="p-4">
-                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${paymentStyles[o.payment]}`}>
-                          <span className="material-symbols-outlined text-[14px]">{paymentIcons[o.payment]}</span> {o.payment}
-                        </span>
+                </thead>
+
+                <tbody>
+                  {filteredOrders.map((order) => (
+                    <tr
+                      key={order.id}
+                      className="border-b border-[#f0e8dc] last:border-b-0 hover:bg-[#fffdf9]"
+                    >
+                      <td className="px-5 py-4 align-top">
+                        <p className="text-[12px] font-medium text-[#16302e]">
+                          {order.id}
+                        </p>
                       </td>
-                      <td className="p-4 text-primary-container/70">{o.provider}</td>
-                      <td className="p-4 text-right">
+
+                      <td className="px-5 py-4 align-top">
+                        <p className="text-[12px] text-[#16302e]">
+                          {order.customer}
+                        </p>
+                        <p className="mt-1 text-[10px] text-[#8b918d]">
+                          {order.email}
+                        </p>
+                      </td>
+
+                      <td className="px-5 py-4 align-top">
+                        <p className="max-w-[220px] text-[12px] text-[#52605a]">
+                          {order.product}
+                        </p>
+                      </td>
+
+                      <td className="px-5 py-4 align-top text-[12px] text-[#52605a]">
+                        {order.quantity}
+                      </td>
+
+                      <td className="px-5 py-4 align-top text-[12px] font-medium text-[#16302e]">
+                        {order.total}
+                      </td>
+
+                      <td className="px-5 py-4 align-top text-[11px] text-[#68736d]">
+                        {order.date}
+                      </td>
+
+                      <td className="px-5 py-4 align-top">
                         <select
-                          value={o.status}
-                          onChange={(e) => updateStatus(o.id, e.target.value)}
-                          className="bg-background border border-surface-container-highest rounded-lg text-xs px-2 py-1 text-primary-container"
+                          value={order.status}
+                          onChange={(e) =>
+                            updateStatus(
+                              order.id,
+                              e.target.value as OrderStatus
+                            )
+                          }
+                          className={`rounded-full border px-3 py-1.5 text-[10px] font-medium outline-none ${statusStyles[order.status]}`}
                         >
-                          <option>{o.status}</option>
-                          <option>Processing</option>
-                          <option>Dispatched</option>
-                          <option>Delivered</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
                         </select>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-            <div className="p-4 border-t border-surface-container-highest/40 flex justify-between items-center text-sm text-primary-container/60">
-              <span>Showing {filtered.length} of {orders.length} orders</span>
-              <div className="flex gap-2">
-                <button disabled className="px-3 py-1 border border-surface-container-highest rounded-lg opacity-50">Prev</button>
-                <button disabled className="px-3 py-1 border border-surface-container-highest rounded-lg opacity-50">Next</button>
-              </div>
+                  ))}
+
+                  {filteredOrders.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="px-5 py-16 text-center text-[12px] text-[#8b918d]"
+                      >
+                        No orders match your search.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-          </div>
+          </section>
         </div>
       </main>
-
-      {toast && (
-        <div className="fixed bottom-8 right-8 bg-primary-container text-background px-6 py-4 rounded-xl shadow-luxury text-sm z-50">
-          {toast}
-        </div>
-      )}
     </div>
   );
 }
