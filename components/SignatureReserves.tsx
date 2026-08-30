@@ -1,17 +1,46 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/lib/products";
 
 export default function SignatureReserves() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   const scroll = (dir: number) => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: dir * 432, behavior: "smooth" });
     }
   };
+
+  // Auto-scroll effect
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    // Respect users who've asked for reduced motion
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
+    let animationFrame: number;
+    const speed = 0.5; // px per frame — tune this for faster/slower drift
+
+    const step = () => {
+      if (!isPaused && el) {
+        // Loop back to start once we hit the end
+        if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 1) {
+          el.scrollLeft = 0;
+        } else {
+          el.scrollLeft += speed;
+        }
+      }
+      animationFrame = requestAnimationFrame(step);
+    };
+
+    animationFrame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [isPaused]);
 
   return (
     <section className="w-full max-w-[1400px] mx-auto px-6 md:px-12 mb-24 bg-background">
@@ -48,6 +77,10 @@ export default function SignatureReserves() {
 
       <div
         ref={scrollRef}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setIsPaused(false)}
         className="flex gap-8 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-none"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
