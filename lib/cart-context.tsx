@@ -1,11 +1,11 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 export type CartItem = {
   id: string;
   name: string;
-  variant: string; // e.g. "5kg / Himalayan Origin"
-  price: number; // USD, per unit
+  variant: string;
+  price: number;
   image: string;
   alt: string;
   qty: number;
@@ -25,10 +25,27 @@ type CartContextType = {
 };
 
 const CartContext = createContext<CartContextType | null>(null);
+const STORAGE_KEY = "heritage-rice-cart";
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) setItems(JSON.parse(saved));
+    } catch {
+      // ignore corrupted storage
+    }
+    setHasHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }, [items, hasHydrated]);
 
   const addItem = (item: Omit<CartItem, "qty">, qty = 1) => {
     setItems((prev) => {
