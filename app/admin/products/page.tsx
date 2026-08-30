@@ -89,13 +89,12 @@ export default function ProductsPage() {
     resetAndClose();
   };
 
-  // Replace removeProduct with a confirm-gated version:
-const handleRemove = (id: string, name: string) => {
-  if (window.confirm(`Remove ${name} from the catalog? This can't be undone.`)) {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-    notify(`${name} removed.`);
-  }
-};
+  const handleRemove = (id: string, name: string) => {
+    if (window.confirm(`Remove ${name} from the catalog? This can't be undone.`)) {
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      notify(`${name} removed.`);
+    }
+  };
 
   const toggleStatus = (id: string) => {
     setProducts((prev) =>
@@ -115,12 +114,12 @@ const handleRemove = (id: string, name: string) => {
               <h1 className="font-serif text-3xl md:text-4xl text-primary-container mb-2">Products</h1>
               <p className="text-sm text-primary-container/70 max-w-2xl">Manage the product catalog shown on the storefront — add new listings, edit stock, and control visibility.</p>
             </div>
-<button
-  onClick={() => setShowModal(true)}
-  className="bg-primary-container text-background rounded-full px-6 py-3 text-xs uppercase tracking-widest hover:bg-primary-container/90 transition-colors w-fit"
->
-  Add Product
-</button>
+            <button
+              onClick={() => setShowModal(true)}
+              className="bg-primary-container text-background rounded-full px-6 py-3 text-xs uppercase tracking-widest hover:bg-primary-container/90 transition-colors w-fit"
+            >
+              Add Product
+            </button>
           </div>
 
           <div className="bg-surface-container-lowest border border-surface-container-highest/40 rounded-xl overflow-hidden">
@@ -173,13 +172,12 @@ const handleRemove = (id: string, name: string) => {
                           </button>
                         </td>
                         <td className="p-4 text-right">
-                          // And update the Remove button in the table to call it:
-<button
-  onClick={() => handleRemove(p.id, p.name)}
-  className="text-red-600 hover:text-red-800 text-xs underline underline-offset-2"
->
-  Remove
-</button>
+                          <button
+                            onClick={() => handleRemove(p.id, p.name)}
+                            className="text-red-600 hover:text-red-800 text-xs underline underline-offset-2"
+                          >
+                            Remove
+                          </button>
                         </td>
                       </tr>
                     ))}

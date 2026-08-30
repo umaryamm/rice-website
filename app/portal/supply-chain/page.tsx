@@ -1,5 +1,7 @@
 import B2BSidebar from "@/components/B2BSidebar";
 
+export const dynamic = "force-dynamic";
+
 const shipments = [
   { ref: "#SC-4471", route: "Karachi → Rotterdam", variety: "Basmati 1121", volume: "24 MT", eta: "Sep 14, 2026", status: "In Transit" },
   { ref: "#SC-4468", route: "Karachi → Dubai", variety: "Jasmine Select", volume: "18 MT", eta: "Sep 08, 2026", status: "Customs Hold" },

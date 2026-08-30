@@ -1,5 +1,7 @@
 import B2BSidebar from "@/components/B2BSidebar";
 
+export const dynamic = "force-dynamic";
+
 const faqs = [
   { q: "How do I request a bulk quote?", a: "Use the \"Request Bulk Quote\" button on your Dashboard, or select varieties directly in the Bulk Catalog and click \"Add Selection to RFQ.\"" },
   { q: "What Incoterms do you support?", a: "We currently support FOB and CIF shipments from Karachi port. Contact your account manager for other arrangements." },

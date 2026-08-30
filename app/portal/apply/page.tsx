@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 
+export const dynamic = "force-dynamic";
+
 const steps = [
   { label: "Identity", title: "Corporate Identity", desc: "Please provide the foundational details of your enterprise to begin the qualification process." },
   { label: "Compliance", title: "Compliance & Volume", desc: "Verify your capacity and legal standing for international distribution." },
