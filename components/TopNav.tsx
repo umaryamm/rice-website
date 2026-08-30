@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 
 export default function TopNav() {
   const { itemCount, openCart } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 20);
@@ -14,6 +16,7 @@ export default function TopNav() {
   }, []);
 
   const navLinks = [
+    { href: "/", label: "Home" },
     { href: "/about", label: "About" },
     { href: "/sustainability", label: "Sustainability" },
     { href: "/certifications", label: "Certifications" },
@@ -34,19 +37,26 @@ export default function TopNav() {
         </a>
 
         <ul className="hidden lg:flex items-center gap-8 text-sm tracking-widest text-primary-container/80 font-medium whitespace-nowrap">
-          <li>
-            <a className="text-primary-container font-bold border-b-2 border-primary-container pb-1" href="/">
-              Home
-            </a>
-          </li>
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <a className="relative pb-1 group transition-colors duration-300 hover:text-primary-container" href={link.href}>
-                {link.label}
-                <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-accent-gold transition-all duration-300 group-hover:w-full" />
-              </a>
-            </li>
-          ))}
+          {navLinks.map((link) => {
+            const active = pathname === link.href;
+            return (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  className={`relative pb-1 group transition-colors duration-300 ${
+                    active
+                      ? "text-primary-container font-bold border-b-2 border-primary-container"
+                      : "hover:text-primary-container"
+                  }`}
+                >
+                  {link.label}
+                  {!active && (
+                    <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-accent-gold transition-all duration-300 group-hover:w-full" />
+                  )}
+                </a>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="hidden lg:flex items-center gap-5 flex-shrink-0">
@@ -99,18 +109,20 @@ export default function TopNav() {
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-background w-full border-t border-surface-container-highest/30 absolute top-full left-0 py-6 px-6 shadow-xl flex flex-col gap-6">
           <ul className="flex flex-col gap-4 text-base tracking-widest text-primary-container font-medium">
-            <li>
-              <a className="font-bold block py-1" href="/" onClick={() => setIsMobileMenuOpen(false)}>
-                Home
-              </a>
-            </li>
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a className="block py-1 opacity-80" href={link.href} onClick={() => setIsMobileMenuOpen(false)}>
-                  {link.label}
-                </a>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const active = pathname === link.href;
+              return (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    className={active ? "font-bold block py-1" : "block py-1 opacity-80"}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
           <div className="h-[1px] bg-surface-container-highest/40 w-full" />
           <div className="flex flex-col gap-3">
