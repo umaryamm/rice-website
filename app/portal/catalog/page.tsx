@@ -40,7 +40,7 @@ export default function CatalogPage() {
           <div className="flex flex-col lg:flex-row gap-12 items-start">
             <div className="w-full lg:w-5/12 flex flex-col gap-8 lg:sticky lg:top-12">
               <div className="relative w-full aspect-[4/5] bg-surface-container-highest/20 rounded-xl overflow-hidden">
-                <Image src="/images/basmati-macro-catalog.png" alt="Extreme macro shot of raw Basmati grains" fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover shadow-luxury" />
+                <Image src="/images/basmati-macro.png" alt="Extreme macro shot of raw Basmati grains" fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover shadow-luxury" />
                 <div className="absolute bottom-6 left-6 right-6 bg-surface-container-lowest/95 rounded-lg p-6 backdrop-blur-sm border border-surface-container-highest/50 flex justify-between items-center">
                   <div>
                     <p className="text-xs text-primary-container mb-1">Premium Grade</p>

@@ -114,7 +114,7 @@ export default function DashboardPage() {
                 </Link>
               </div>
               <div className="h-48 md:flex-1 relative bg-primary-container overflow-hidden rounded-xl">
-                <Image src="/images/rice-grains-texture.png" alt="Raw heirloom rice grains on burlap" fill sizes="400px" className="object-cover opacity-60 mix-blend-overlay" />
+                <Image src="/images/rice-grains-burlap.png" alt="Raw heirloom rice grains on burlap" fill sizes="400px" className="object-cover opacity-60 mix-blend-overlay" />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary-container to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6">
                   <p className="text-xs text-accent-gold mb-1">Harvest Report</p>
