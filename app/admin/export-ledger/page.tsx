@@ -2,6 +2,9 @@
 import { useState } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
 
+export const dynamic = "force-dynamic";
+
+
 const kpis = [
   { label: "Active Shipments", value: "12" },
   { label: "In Customs Hold", value: "3" },

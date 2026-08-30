@@ -3,6 +3,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
+
 const ADMIN_EMAIL = "admin@heritagericeco.com";
 const ADMIN_PASSWORD = "admin2024";
 
