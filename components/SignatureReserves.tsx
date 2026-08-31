@@ -1,46 +1,52 @@
 "use client";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/lib/products";
 
 export default function SignatureReserves() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  const scroll = (dir: number) => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: dir * 432, behavior: "smooth" });
-    }
-  };
-
-  // Auto-scroll effect
-  useEffect(() => {
+  const getCardOffset = useCallback((index: number) => {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el) return 0;
+    const card = el.children[index] as HTMLElement | undefined;
+    return card ? card.offsetLeft : 0;
+  }, []);
 
-    // Respect users who've asked for reduced motion
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) return;
-
-    let animationFrame: number;
-    const speed = 0.5; // px per frame — tune this for faster/slower drift
-
-    const step = () => {
-      if (!isPaused && el) {
-        // Loop back to start once we hit the end
-        if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 1) {
-          el.scrollLeft = 0;
-        } else {
-          el.scrollLeft += speed;
-        }
+  const goTo = useCallback(
+    (index: number) => {
+      const wrapped = (index + products.length) % products.length;
+      setActiveIndex(wrapped);
+      const el = scrollRef.current;
+      if (el) {
+        el.scrollTo({ left: getCardOffset(wrapped), behavior: "smooth" });
       }
-      animationFrame = requestAnimationFrame(step);
-    };
+    },
+    [getCardOffset]
+  );
 
-    animationFrame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [isPaused]);
+  const next = () => goTo(activeIndex + 1);
+  const prev = () => goTo(activeIndex - 1);
+
+  // Autoplay — steps one card at a time, pauses on hover/touch/manual interaction
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion || isPaused) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => {
+        const nextIndex = (prev + 1) % products.length;
+        const el = scrollRef.current;
+        if (el) el.scrollTo({ left: getCardOffset(nextIndex), behavior: "smooth" });
+        return nextIndex;
+      });
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isPaused, getCardOffset]);
 
   return (
     <section className="w-full max-w-[1400px] mx-auto px-6 md:px-12 mb-24 bg-background">
@@ -59,16 +65,22 @@ export default function SignatureReserves() {
 
         <div className="hidden md:flex gap-4">
           <button
-            onClick={() => scroll(-1)}
+            onClick={() => {
+              setIsPaused(true);
+              prev();
+            }}
             className="w-12 h-12 rounded-full border border-primary-container/30 flex items-center justify-center text-primary-container transition-all duration-300 hover:bg-primary-container hover:text-background hover:border-primary-container"
-            title="Scroll Left"
+            title="Previous"
           >
             <span className="material-symbols-outlined text-[22px]">arrow_back</span>
           </button>
           <button
-            onClick={() => scroll(1)}
+            onClick={() => {
+              setIsPaused(true);
+              next();
+            }}
             className="w-12 h-12 rounded-full border border-primary-container/30 flex items-center justify-center text-primary-container transition-all duration-300 hover:bg-primary-container hover:text-background hover:border-primary-container"
-            title="Scroll Right"
+            title="Next"
           >
             <span className="material-symbols-outlined text-[22px]">arrow_forward</span>
           </button>
@@ -80,7 +92,6 @@ export default function SignatureReserves() {
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         onTouchStart={() => setIsPaused(true)}
-        onTouchEnd={() => setIsPaused(false)}
         className="flex gap-8 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-none"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
@@ -115,6 +126,23 @@ export default function SignatureReserves() {
               </span>
             </div>
           </Link>
+        ))}
+      </div>
+
+      {/* Dot indicators */}
+      <div className="flex justify-center gap-2 -mt-4">
+        {products.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              setIsPaused(true);
+              goTo(i);
+            }}
+            aria-label={`Go to slide ${i + 1}`}
+            className={`h-2 rounded-full transition-all duration-300 ${
+              i === activeIndex ? "w-6 bg-primary-container" : "w-2 bg-surface-container-highest"
+            }`}
+          />
         ))}
       </div>
     </section>
